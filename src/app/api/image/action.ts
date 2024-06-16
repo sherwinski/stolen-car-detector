@@ -3,6 +3,7 @@
 import { put, head, BlobNotFoundError } from '@vercel/blob'
 import { NextResponse } from 'next/server'
 
+// A server action responsible for uploading a single image to the Blob Storage
 export async function uploadImage({
   filename,
   body,
@@ -11,11 +12,13 @@ export async function uploadImage({
   body: any
 }) {
   try {
+    // We can skip uploading if the file already exists
     if (await checkFileExists(filename)) {
       console.log('file already exists, skipping upload')
-      return
+      return new Response(null, { status: 204 })
     }
 
+    // Upload without a random suffix to make it easy when checking for existence
     const blob = await put(filename, body, {
       access: 'public',
       addRandomSuffix: false,
@@ -23,10 +26,12 @@ export async function uploadImage({
 
     return NextResponse.json({ blob }, { status: 200 })
   } catch (error) {
+    console.error('error uploading image', error)
     return NextResponse.json({ error }, { status: 500 })
   }
 }
 
+// Checks if a file already exists in the Blob Storage by it's filename
 async function checkFileExists(filename: string): Promise<boolean> {
   try {
     const bucketUrl = process.env.BLOB_BUCKET_URL
@@ -38,14 +43,3 @@ async function checkFileExists(filename: string): Promise<boolean> {
     throw error
   }
 }
-
-// export async function POST(request: Request): Promise<NextResponse> {
-//   const { searchParams } = new URL(request.url)
-//   const filename = searchParams.get('filename')
-
-//   const blob = await put(filename, request.body, {
-//     access: 'public',
-//   })
-
-//   return NextResponse.json(blob)
-// }
