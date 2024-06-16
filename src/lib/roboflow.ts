@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-// Utilizing Roboflow's DocTR model, we can extract text from images
+// Utilizing Roboflow's DocTR model, extract text from images
 export default async function getOcrData({ fileData }: { fileData: Buffer }) {
   try {
     const ROBOFLOW_API_KEY = process.env.ROBOFLOW_API_KEY

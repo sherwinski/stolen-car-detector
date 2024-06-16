@@ -8,14 +8,17 @@ import { writeMetadataToVehiclesTable } from '@/app/api/vehicle/actions'
 
 const directoryPath = 'scripts/vehicle_images'
 
+// get all files from the directory that contains the seed images
 async function readFilesFromDirectory(directoryPath: string) {
   return await fs.promises.readdir(directoryPath)
 }
 
+// read the data from the file as a Buffer
 async function readFileData(filePath: string) {
   return await fs.promises.readFile(filePath)
 }
 
+// upload the file to the Blob Storage
 async function uploadFile({
   fileData,
   filename,
@@ -30,11 +33,12 @@ async function uploadFile({
   })
 }
 
+// extract text from the image using Roboflow Inference
 async function getTextFromImage({ fileData }: { fileData: Buffer }) {
   const OcrData = await getOcrData({ fileData })
 
   // To help with fuzzy searching, we remove all white space from the text.
-  // There is a chance that text cannot be extracted so we will add a fallback.
+  // Note: There is a chance that text cannot be extracted so we will add a fallback.
   const textWithoutWhiteSpace = OcrData.result?.replace(/\s/g, '') || ''
   return textWithoutWhiteSpace
 }
@@ -60,6 +64,7 @@ async function seedDatabases() {
         console.log('\tUploading file: ', filename)
         const uploadedImageBlob = await uploadFile({ fileData, filename })
 
+        // if the image was uploaded successfully, extract the text from the image
         if (uploadedImageBlob.status === 200) {
           const uploadedImageUrl = (await uploadedImageBlob.json()).blob.url
           console.log(
@@ -78,16 +83,19 @@ async function seedDatabases() {
           return {
             success: filePath,
           }
+          // if the image already exists, skip the image
         } else if (uploadedImageBlob.status === 204) {
           return {
             warning: filePath,
           }
+          // if there was an error uploading the image, log the error
         } else {
           return { error: filePath }
         }
       })
     )
 
+    // log resultes based on successes, skips, and failures when seeding the database
     const addedImages = results.filter((result) => result.success)
     const skippedImages = results.filter((result) => result.warning)
     const erroredImages = results.filter((result) => result.error)

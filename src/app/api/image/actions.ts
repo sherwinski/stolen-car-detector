@@ -1,6 +1,6 @@
 'use server'
 
-import { put, head, BlobNotFoundError, list } from '@vercel/blob'
+import { put, head, BlobNotFoundError } from '@vercel/blob'
 import { NextResponse } from 'next/server'
 
 // A server action responsible for uploading a single image to the Blob Storage

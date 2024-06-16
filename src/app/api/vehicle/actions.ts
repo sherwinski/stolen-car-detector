@@ -4,6 +4,8 @@ import { generateRandomCoordinate, generateRandomDatatime } from '@/lib/utils'
 import { sql } from '@vercel/postgres'
 import { NextResponse } from 'next/server'
 
+// Write a row to the vehicles table for each image uploaded.
+// Randomly generating latitude, longitude, and last seen datetime.
 export async function writeMetadataToVehiclesTable({
   licensePlateText,
   imageUrl,
