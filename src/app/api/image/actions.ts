@@ -1,6 +1,6 @@
 'use server'
 
-import { put, head, BlobNotFoundError } from '@vercel/blob'
+import { put, head, BlobNotFoundError, list } from '@vercel/blob'
 import { NextResponse } from 'next/server'
 
 // A server action responsible for uploading a single image to the Blob Storage
@@ -12,9 +12,10 @@ export async function uploadImage({
   body: Blob
 }) {
   try {
+    const items = await list()
+    console.log('Blob items', items.blobs.length)
     // We can skip uploading if the file already exists
     if (await checkFileExists(filename)) {
-      console.log('file already exists, skipping upload')
       return new Response(null, { status: 204 })
     }
 

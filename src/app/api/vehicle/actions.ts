@@ -11,7 +11,7 @@ export async function writeMetadataToVehiclesTable({
   licensePlateText: string
   imageUrl: string
 }) {
-  console.log('Inserting row into vehicles table...', imageUrl)
+  console.log('\tInserting row into vehicles table...', imageUrl)
 
   const { latitude, longitude } = generateRandomCoordinate()
   const lastSeen = generateRandomDatatime()
@@ -19,7 +19,8 @@ export async function writeMetadataToVehiclesTable({
     const result = await sql`
   INSERT INTO vehicles (license_plate_text, image_url, latitude, longitude, last_seen) VALUES (${licensePlateText}, ${imageUrl}, ${latitude}, ${longitude}, ${lastSeen} );`
 
-    return NextResponse.json({ result }, { status: 200 })
+    console.log('\tSuccessfully inserted row\n')
+    return NextResponse.json(result, { status: 200 })
   } catch (error) {
     console.error('Error inserting row into vehicles table', error)
     return NextResponse.json({ error }, { status: 500 })
