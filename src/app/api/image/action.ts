@@ -9,7 +9,7 @@ export async function uploadImage({
   body,
 }: {
   filename: string
-  body: any
+  body: Blob
 }) {
   try {
     // We can skip uploading if the file already exists

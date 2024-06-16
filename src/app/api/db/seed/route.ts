@@ -1,27 +1,15 @@
 import fs from 'fs'
 import path from 'path'
+
 import { NextResponse } from 'next/server'
-import { uploadImage } from '../../image/action'
+
+import { uploadImage } from '@/app/api/image/action' // TODO: change to 'actions'
+import getOcrData from '@/lib/roboflow'
+import { writeMetadataToVehiclesTable } from '@/app/api/vehicle/actions'
 
 const directoryPath = 'src/app/api/db/seed/vehicle_images'
 
-function getRandomValue(min: number, max: number) {
-  return Math.random() * (max - min) + min
-}
-
-function generateRandomCoordinate() {
-  const latMin = 37.224
-  const latMax = 38.1139
-  const lonMin = -123.017
-  const lonMax = -121.517
-
-  const latitude = getRandomValue(latMin, latMax)
-  const longitude = getRandomValue(lonMin, lonMax)
-
-  return { latitude, longitude }
-}
-
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const files = await fs.promises.readdir(directoryPath)
 
@@ -33,23 +21,36 @@ export async function GET(request: Request) {
         // files.map(async (file) => {
         const filePath = path.join(directoryPath, file)
 
-        const fileContents = await fs.promises.readFile(filePath)
-
-        const blob = new Blob([fileContents])
-        const uploadedImage = await uploadImage({
-          filename: 'test4-' + file,
+        const fileData = await fs.promises.readFile(filePath)
+        const blob = new Blob([fileData])
+        const uploadedImageBlob = await uploadImage({
+          filename: 'test00-' + file, // TODO: remove 'test' prefix
           body: blob,
         })
 
-        if (uploadedImage) {
-          const data = await uploadedImage.json()
-          console.log('uploadedImage', data)
+        if (uploadedImageBlob.status === 200) {
+          const data = await uploadedImageBlob.json()
+          const uploadedImageUrl = data.blob.url
+
+          console.log(
+            'upload successful, getting ocr data...',
+            uploadedImageUrl
+          )
+          const { OcrData } = await (await getOcrData({ fileData })).json()
+
+          const processedOcrText = OcrData.result.replace(/\s/g, '')
+
+          await writeMetadataToVehiclesTable({
+            licensePlateText: processedOcrText,
+            imageUrl: uploadedImageUrl,
+          })
         }
       })
     )
 
     return NextResponse.json({ subFiles }, { status: 200 })
   } catch (error) {
+    console.error('error uploading image', error)
     return NextResponse.json({ error }, { status: 500 })
   }
 }
