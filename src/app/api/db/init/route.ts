@@ -2,15 +2,16 @@ import { sql } from '@vercel/postgres'
 import { NextResponse } from 'next/server'
 
 // Initialize the database with a table for vehicles
-export async function GET(request: Request) {
-  console.log('Creating table...\n')
+export async function GET() {
+  console.log('Creating vehicle table...\n')
   try {
     const result = await sql`CREATE TABLE IF NOT EXISTS vehicles (
         id SERIAL PRIMARY KEY,
-        license_plate TEXT,
+        license_plate_text TEXT,
         image_url TEXT NOT NULL,
         latitude DECIMAL,
         longitude DECIMAL,
+        last_seen TIMESTAMPTZ,
         created_at TIMESTAMPTZ DEFAULT NOW()
         )`
     return NextResponse.json({ result }, { status: 200 })
