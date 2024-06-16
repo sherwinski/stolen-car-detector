@@ -11,7 +11,7 @@ export async function writeMetadataToVehiclesTable({
   licensePlateText: string
   imageUrl: string
 }) {
-  console.log('Inserting row into vehicles table...')
+  console.log('Inserting row into vehicles table...', imageUrl)
 
   const { latitude, longitude } = generateRandomCoordinate()
   const lastSeen = generateRandomDatatime()
