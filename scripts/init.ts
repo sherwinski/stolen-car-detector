@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 export async function createVehiclesTable() {
   console.log('\tCreating vehicle table...\n')
   try {
-    await sql`CREATE EXTENSION pg_trgm;`
+    await sql`CREATE EXTENSION IF NOT EXISTS pg_trgm;`
     await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`
 
     const result = await sql`CREATE TABLE IF NOT EXISTS vehicles (

@@ -24,7 +24,7 @@ export default async function getOcrData({ fileData }: { fileData: Buffer }) {
       }
     )
     const inferenceData = await inferenceResponse.json()
-    return NextResponse.json(inferenceData, { status: 200 })
+    return inferenceData
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 })
   }

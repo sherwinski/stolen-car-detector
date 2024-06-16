@@ -8,8 +8,6 @@ import { writeMetadataToVehiclesTable } from '@/app/api/vehicle/actions'
 
 const directoryPath = 'scripts/vehicle_images'
 
-// let count = 7 // TODO: remove me
-
 async function readFilesFromDirectory(directoryPath: string) {
   return await fs.promises.readdir(directoryPath)
 }
@@ -27,24 +25,24 @@ async function uploadFile({
 }) {
   const fileDataAsBlob = new Blob([fileData])
   return await uploadImage({
-    // filename: `test${count++}-` + filename, // TODO: remove 'test' prefix
     filename: filename,
     body: fileDataAsBlob,
   })
 }
 
 async function getTextFromImage({ fileData }: { fileData: Buffer }) {
-  const OcrData = await (await getOcrData({ fileData })).json()
+  const OcrData = await getOcrData({ fileData })
 
-  // To help with fuzzy searching, we remove all white space from the text
-  const textWithoutWhiteSpace = OcrData.result.replace(/\s/g, '')
+  // To help with fuzzy searching, we remove all white space from the text.
+  // There is a chance that text cannot be extracted so we will add a fallback.
+  const textWithoutWhiteSpace = OcrData.result?.replace(/\s/g, '') || ''
   return textWithoutWhiteSpace
 }
 
 /**
  * Loops over all image files in the vehicle_images directory, uploading each
- * to blog storage, extracting OCR data from the image using Roboflow, and
- * writing the metadata to the Postgres `vehicles` table.
+ * to blog storage, extracting OCR data from the image using Roboflow
+ * Inference, and writing the metadata to the Postgres `vehicles` table.
  * */
 async function seedDatabases() {
   console.log('Seeding databases...\n')
@@ -52,12 +50,8 @@ async function seedDatabases() {
   try {
     const files = await readFilesFromDirectory(directoryPath)
 
-    const subFiles = files.slice(0, 1) // TODO: remove me
-
     const results = await Promise.all(
-      subFiles.map(async (filename) => {
-        // TODO: remove me
-        //   files.map(async (filename) => {
+      files.map(async (filename) => {
         console.log('Processing file: ', filename)
 
         const filePath = path.join(directoryPath, filename)
