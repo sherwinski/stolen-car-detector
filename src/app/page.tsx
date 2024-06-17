@@ -8,6 +8,7 @@ import { getVehicleByLicensePlate } from './api/vehicle/actions'
 import type { Vehicle } from '@/lib/types'
 import { Photo } from '@/components/Photo'
 import { PhotoGrid } from '@/components/PhotoGrid'
+import { Footer } from '@/components/Footer'
 
 export default function Home() {
   const [licensePlateText, setLicensePlateText] = useState<string>('')
@@ -31,7 +32,7 @@ export default function Home() {
 
   return (
     // <main className="flex min-h-screen flex-col items-center justify-between p-24">
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 gap-24">
       <div>
         <p className="text-4xl">Stolen Vehicle Search Database</p>
       </div>
@@ -74,9 +75,7 @@ export default function Home() {
       )}
 
       {vehicles.length === 0 && <p className="text-3xl">No results found</p>}
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        Made with Roboflow 🤖
-      </div>
+      <Footer />
     </main>
   )
 }
