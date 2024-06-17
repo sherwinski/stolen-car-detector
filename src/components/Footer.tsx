@@ -5,8 +5,8 @@ export function Footer() {
       Made with Roboflow 🤖
       <p className="text-slate-500">
         <b>Hint:</b> If you want to test something quickly, try searching for{' '}
-        <code className="italic text-orange-500">ABC</code> or{' '}
-        <code className="italic text-orange-500">123</code>
+        <code className="italic text-orange-500">"ALI"</code>. Alternatively,
+        you could try an empty search.
       </p>
     </div>
   )
