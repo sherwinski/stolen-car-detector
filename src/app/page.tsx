@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { getVehicleByLicensePlate } from './api/vehicle/actions'
 import type { Vehicle } from '@/lib/types'
+import { Photo } from '@/components/Photo'
+import { PhotoGrid } from '@/components/PhotoGrid'
 
 export default function Home() {
   const [licensePlateText, setLicensePlateText] = useState<string>('')
@@ -28,6 +30,7 @@ export default function Home() {
   }
 
   return (
+    // <main className="flex min-h-screen flex-col items-center justify-between p-24">
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div>
         <p className="text-4xl">Stolen Vehicle Search Database</p>
@@ -49,20 +52,28 @@ export default function Home() {
         </div>
       </div>
 
-      <div>
-        <p className="text-2xl mt-8">Results</p>
-        <ul className="mt-4">
-          {vehicles.map((vehicle) => (
-            <li key={vehicle.license_plate_text}>
-              <p>{vehicle.license_plate_text}</p>
-              <p>{vehicle.last_seen.toString()}</p>
-              <p>{vehicle.latitude}</p>
-              <p>{vehicle.longitude}</p>
-              <img src={vehicle.image_url} alt="vehicle" />
-            </li>
-          ))}
-        </ul>
-      </div>
+      {vehicles.length > 0 && (
+        <div className="flex flex-col gap-8 w-full">
+          <p className="text-2xl mt-8 items-center">Results</p>
+          <PhotoGrid vehicles={vehicles} />
+          {/* <ul className="mt-4">
+            {vehicles.map((vehicle) => (
+              <li key={vehicle.license_plate_text}>
+                <p>{vehicle.license_plate_text}</p>
+                <p>{vehicle.last_seen.toString()}</p>
+                <p>{vehicle.latitude}</p>
+                <p>{vehicle.longitude}</p>
+                <Photo
+                  src={vehicle.image_url}
+                  alt={`Vehicle with license plate ${vehicle.license_plate_text}`}
+                />
+              </li>
+            ))}
+          </ul> */}
+        </div>
+      )}
+
+      {vehicles.length === 0 && <p className="text-3xl">No results found</p>}
       <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
         Made with Roboflow 🤖
       </div>
