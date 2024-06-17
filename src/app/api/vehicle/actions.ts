@@ -28,3 +28,21 @@ export async function writeMetadataToVehiclesTable({
     return NextResponse.json({ error }, { status: 500 })
   }
 }
+
+export async function getVehicleByLicensePlate({
+  licensePlateText,
+}: {
+  licensePlateText: string
+}) {
+  try {
+    const licensePlateTextAsWildcard = `%${licensePlateText}%`
+    const result = await sql`
+  SELECT * FROM vehicles WHERE SIMILARITY(license_plate_text, ${licensePlateText}) > 0.4 OR license_plate_text LIKE ${licensePlateTextAsWildcard};`
+
+    console.log('\tSuccessfully got vehicle by license plate\n', result)
+    return result.rows
+  } catch (error) {
+    console.error('Error getting vehicle by license plate', error)
+    return []
+  }
+}
