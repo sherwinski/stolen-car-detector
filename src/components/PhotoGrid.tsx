@@ -38,6 +38,7 @@ export function PhotoGrid({ vehicles }: { vehicles: Vehicle[] }) {
                   setLightboxVehicle(vehicle)
                   setLightboxOpen(true)
                 }}
+                className="hover:border-orange-600 border-transparent border-2"
               />
             </li>
           ))}

@@ -1,6 +1,7 @@
 import { Vehicle } from '@/lib/types'
 import Image from 'next/image'
 import { PhotoCaption } from './PhotoCaption'
+import { cn } from '@/lib/utils'
 
 export function Photo({
   src,
@@ -9,6 +10,7 @@ export function Photo({
   height,
   onClick,
   captionInfo,
+  className,
 }: {
   src: string
   alt: string
@@ -16,6 +18,7 @@ export function Photo({
   height?: number
   onClick?: () => void
   captionInfo?: Vehicle
+  className?: string
 }) {
   const vehicleInfo = captionInfo
   return (
@@ -26,7 +29,10 @@ export function Photo({
         sizes={`(max-width: 360px) 240px, (max-width: 720px) 540px, 540px`}
         width={width}
         height={height}
-        className="max-h-full min-w-full object-contain align-bottom"
+        className={cn(
+          'max-h-full min-w-full object-cover overflow-hidden align-bottom',
+          className
+        )}
         onClick={onClick}
       />
       <PhotoCaption vehicleInfo={vehicleInfo} />
