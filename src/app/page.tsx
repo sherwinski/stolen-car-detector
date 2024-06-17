@@ -47,20 +47,6 @@ export default function Home() {
       {isSearched && (
         <div className="flex flex-col gap-8 w-full items-center">
           <PhotoGrid vehicles={vehicles} />
-          {/* <ul className="mt-4">
-            {vehicles.map((vehicle) => (
-              <li key={vehicle.license_plate_text}>
-                <p>{vehicle.license_plate_text}</p>
-                <p>{vehicle.last_seen.toString()}</p>
-                <p>{vehicle.latitude}</p>
-                <p>{vehicle.longitude}</p>
-                <Photo
-                  src={vehicle.image_url}
-                  alt={`Vehicle with license plate ${vehicle.license_plate_text}`}
-                />
-              </li>
-            ))}
-          </ul> */}
         </div>
       )}
 

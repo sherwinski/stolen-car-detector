@@ -20,6 +20,7 @@ export function PhotoGrid({ vehicles }: { vehicles: Vehicle[] }) {
             alt={`lightboxVehicle with license plate ${lightboxVehicle?.license_plate_text}`}
             width={580}
             height={580}
+            captionInfo={lightboxVehicle}
           />
         </PhotoLightbox>
       )}
