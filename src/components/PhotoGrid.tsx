@@ -24,7 +24,7 @@ export function PhotoGrid({ vehicles }: { vehicles: Vehicle[] }) {
           />
         </PhotoLightbox>
       )}
-      <ul className="flex flex-wrap w-[90%] m-auto gap-2">
+      <ul className="flex flex-wrap gap-2">
         {!!vehicles &&
           vehicles.map((vehicle, idx) => (
             <li className="max-h-max flex-grow list-none" key={idx}>
@@ -41,7 +41,7 @@ export function PhotoGrid({ vehicles }: { vehicles: Vehicle[] }) {
               />
             </li>
           ))}
-        <li className="flex-auto"></li>
+        <li className="flex flex-grow-[15]"></li>
       </ul>
     </>
   )

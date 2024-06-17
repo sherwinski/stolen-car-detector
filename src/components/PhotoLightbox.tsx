@@ -16,8 +16,6 @@ export function PhotoLightbox({
       onOpenChange={(open) => setLightboxOpen(open)}
       modal
     >
-      <DialogHeader>Hello</DialogHeader>
-
       <DialogContent>
         <DialogTrigger asChild>{children}</DialogTrigger>
       </DialogContent>
