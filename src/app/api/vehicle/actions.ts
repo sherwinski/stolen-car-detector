@@ -1,5 +1,6 @@
 'use server'
 
+import { Vehicle } from '@/lib/types'
 import { generateRandomCoordinate, generateRandomDatatime } from '@/lib/utils'
 import { sql } from '@vercel/postgres'
 import { NextResponse } from 'next/server'
@@ -39,10 +40,26 @@ export async function getVehicleByLicensePlate({
     const result = await sql`
   SELECT * FROM vehicles WHERE SIMILARITY(license_plate_text, ${licensePlateText}) > 0.4 OR license_plate_text LIKE ${licensePlateTextAsWildcard};`
 
-    console.log('\tSuccessfully got vehicle by license plate\n', result)
     return result.rows
   } catch (error) {
     console.error('Error getting vehicle by license plate', error)
     return []
   }
+}
+
+export async function searchForVehicles(licensePlateText: string) {
+  const vehiclesFound = await getVehicleByLicensePlate({
+    licensePlateText,
+  })
+  const mappedVehicles = vehiclesFound.map((row) => ({
+    id: row.id,
+    license_plate_text: row.license_plate_text,
+    image_url: row.image_url,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    last_seen: row.last_seen,
+    created_at: row.created_at,
+  })) as Vehicle[]
+
+  return mappedVehicles
 }
