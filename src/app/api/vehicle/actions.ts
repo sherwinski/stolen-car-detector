@@ -63,3 +63,15 @@ export async function searchForVehicles(licensePlateText: string) {
 
   return mappedVehicles
 }
+
+export async function getMostRecentVehicles(limit?: number) {
+  try {
+    const result = await sql`
+  SELECT * FROM vehicles ORDER BY created_at DESC LIMIT ${limit || 10};`
+
+    return result.rows
+  } catch (error) {
+    console.error('Error getting most recent vehicles', error)
+    return []
+  }
+}

@@ -1,4 +1,5 @@
 import { Vehicle } from '@/lib/types'
+import MapLink from './MapLink'
 
 export function PhotoCaption({ vehicleInfo }: { vehicleInfo?: Vehicle }) {
   if (!vehicleInfo) return <></>
@@ -21,11 +22,10 @@ export function PhotoCaption({ vehicleInfo }: { vehicleInfo?: Vehicle }) {
 
         <p className="text-center">
           Last seen location:{' '}
-          <a
-            href={`https://www.google.com/maps?q=${vehicleInfo?.latitude},${vehicleInfo?.longitude}`}
-          >
-            <span className=" text-blue-500">Maps</span>
-          </a>
+          <MapLink
+            latitude={vehicleInfo.latitude}
+            longitude={vehicleInfo.longitude}
+          />
         </p>
       </div>
     </div>
