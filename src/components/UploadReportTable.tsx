@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Table,
   TableHeader,
@@ -12,25 +12,35 @@ import {
 import { getMostRecentVehicles } from '@/app/api/vehicle/actions'
 import { Vehicle } from '@/lib/types'
 import MapLink from './MapLink'
+import { PhotoLightbox } from './PhotoLightbox'
+import { Photo } from './Photo'
 
-export async function UploadReportTable() {
-  // const [file, setFiles] = useState([])
-  // const handleFileChange = (event) => {
-  //   if (event.target.files) {
-  //     setFiles(Array.from(event.target.files))
-  //   }
-  // }
-  // const uploadedFiles = useMemo(() => {
-  //   return files.slice(0, 10).map((file) => ({
-  //     name: file.name,
-  //     size: file.size,
-  //     uploadDate: new Date().toLocaleString(),
-  //   }))
-  // }, [files])
+export function UploadReportTable() {
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxVehicle, setLightboxVehicle] = useState<Vehicle | null>(null)
+  const [recentVehicles, setRecentVehicles] = useState<Vehicle[]>([])
 
-  const recentVehicles = (await getMostRecentVehicles()) as Vehicle[]
+  useEffect(() => {
+    const getVehicles = async () => {
+      const vehicles = (await getMostRecentVehicles()) as Vehicle[]
+      setRecentVehicles(vehicles)
+    }
+    getVehicles()
+  }, [])
+
   return (
     <div className="border border-gray-200 rounded-lg p-6 dark:border-gray-800 w-[80%]">
+      {lightboxOpen && lightboxVehicle && (
+        <PhotoLightbox lightboxOpen setLightboxOpen={setLightboxOpen}>
+          <Photo
+            src={lightboxVehicle?.image_url || ''}
+            alt={`lightboxVehicle with license plate ${lightboxVehicle?.license_plate_text}`}
+            width={580}
+            height={580}
+            captionInfo={lightboxVehicle}
+          />
+        </PhotoLightbox>
+      )}
       <h2 className="text-2xl font-bold mb-4">Uploaded Files</h2>
       <div className="overflow">
         <Table>
@@ -43,29 +53,29 @@ export async function UploadReportTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recentVehicles.map(
-              ({
-                id,
-                image_url,
-                last_seen,
-                latitude,
-                longitude,
-                created_at,
-              }) => (
-                <TableRow key={id}>
-                  <a href={image_url} className="hover:text-orange-500">
-                    <TableCell>
-                      {image_url.split('/').slice(-1).join('/')}
-                    </TableCell>
-                  </a>
-                  <TableCell>{last_seen.toLocaleString()}</TableCell>
+            {recentVehicles.map((vehicle) => (
+              <TableRow key={vehicle.id}>
+                <a
+                  onClick={() => {
+                    setLightboxVehicle(vehicle)
+                    setLightboxOpen(true)
+                  }}
+                  className="hover:text-orange-500"
+                >
                   <TableCell>
-                    <MapLink latitude={latitude} longitude={longitude} />{' '}
+                    {vehicle.image_url.split('/').slice(-1).join('/')}
                   </TableCell>
-                  <TableCell>{created_at.toLocaleDateString()}</TableCell>
-                </TableRow>
-              )
-            )}
+                </a>
+                <TableCell>{vehicle.last_seen.toLocaleString()}</TableCell>
+                <TableCell>
+                  <MapLink
+                    latitude={vehicle.latitude}
+                    longitude={vehicle.longitude}
+                  />{' '}
+                </TableCell>
+                <TableCell>{vehicle.created_at.toLocaleDateString()}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>
