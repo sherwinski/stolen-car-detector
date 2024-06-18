@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { toast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use-toast'
 import { Input } from './ui/input'
 
 const MAX_FILE_SIZE = 1000000
@@ -35,8 +35,7 @@ const ACCEPTED_IMAGE_TYPES = [
 ]
 
 const FormSchema = z.object({
-  // Courtesy of: https://github.com/colinhacks/zod/issues/387#issuecomment-1191390673
-  picture: z
+  picture: z //courtesy of: https://github.com/colinhacks/zod/issues/387#issuecomment-1191390673
     .any()
     .refine((files) => files?.length == 1, 'Image is required.')
     .refine(
@@ -59,12 +58,16 @@ export function UploadForm() {
     resolver: zodResolver(FormSchema),
   })
 
+  const { toast } = useToast()
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
     toast({
-      title: 'You submitted the following values:',
+      title: 'Image is uploading',
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+          <p className="text-pretty">
+            Please give it a moment to finish processing...
+          </p>
         </pre>
       ),
     })
