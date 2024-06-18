@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="flex min-h-screen flex-col items-center justify-between p-24 gap-4 font-light">
+        <main className="flex min-h-screen flex-col items-center justify-between px-24 pt-12 gap-4 font-light">
           <NavigationBar />
           {children}
         </main>
