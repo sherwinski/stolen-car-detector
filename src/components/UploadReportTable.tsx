@@ -29,7 +29,7 @@ export function UploadReportTable() {
   }, [])
 
   return (
-    <div className="border border-gray-200 rounded-lg p-6 dark:border-gray-800 w-[80%]">
+    <div className="border border-gray-200 rounded-lg p-6 dark:border-gray-800">
       {lightboxOpen && lightboxVehicle && (
         <PhotoLightbox lightboxOpen setLightboxOpen={setLightboxOpen}>
           <Photo
