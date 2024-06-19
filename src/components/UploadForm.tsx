@@ -74,16 +74,9 @@ export function UploadForm() {
     const formData = new FormData()
     formData.append('file', data.file[0])
 
-    // formData.append(
-    //   'file',
-    //   new Blob([data.file[0]], { type: data.file[0].type })
-    // )
     formData.append('lastSeenDate', data.lastSeenDate?.toISOString() || '')
     formData.append('latitude', data.latitude || '')
     formData.append('longitude', data.longitude || '')
-    // for (const value of formData.values()) {
-    //   console.log(value)
-    // }
 
     toast({
       title: 'Image is uploading',
@@ -97,9 +90,7 @@ export function UploadForm() {
     })
 
     await uploadAndProcessFile(formData)
-    console.log('done uploading, lets refresh the page')
-    // router.replace('/upload')
-    // router.refresh()
+    router.push('/')
   }
 
   return (
@@ -116,10 +107,6 @@ export function UploadForm() {
                 type="file"
                 accept={ACCEPT_IMAGE_TYPES_STRING}
                 {...fileRef}
-                // onChange={(event) => {
-                //   console.log('change is a happenin: ', event.target.files[0])
-                //   field.onChange(event.target?.files?.[0] ?? undefined)
-                // }}
               />
               <FormMessage />
             </div>
