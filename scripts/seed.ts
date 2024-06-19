@@ -14,11 +14,11 @@ async function readFilesFromDirectory(directoryPath: string) {
 }
 
 // read the data from the file as a Buffer
-async function readFileData(filePath: string) {
+export async function readFileData(filePath: string) {
   return await fs.promises.readFile(filePath)
 }
 
-// upload the file to the Blob Storage
+// upload the file to the Blob Storage, first converting the Buffer to a Blob
 async function uploadFile({
   fileData,
   filename,
@@ -95,7 +95,7 @@ async function seedDatabases() {
       })
     )
 
-    // log resultes based on successes, skips, and failures when seeding the database
+    // log results based on successes, skips, and failures when seeding the database
     const addedImages = results.filter((result) => result.success)
     const skippedImages = results.filter((result) => result.warning)
     const erroredImages = results.filter((result) => result.error)

@@ -7,13 +7,15 @@ import { NextResponse } from 'next/server'
 export async function uploadImage({
   filename,
   body,
+  checkExists = true,
 }: {
   filename: string
   body: Blob
+  checkExists?: boolean
 }) {
   try {
     // We can skip uploading if the file already exists
-    if (await checkFileExists(filename)) {
+    if (checkExists && (await doesFileExist(filename))) {
       return new Response(null, { status: 204 })
     }
 
@@ -31,7 +33,7 @@ export async function uploadImage({
 }
 
 // Checks if a file already exists in the Blob Storage by it's filename
-async function checkFileExists(filename: string): Promise<boolean> {
+async function doesFileExist(filename: string): Promise<boolean> {
   try {
     const bucketUrl = process.env.BLOB_BUCKET_URL
     await head(bucketUrl + filename)

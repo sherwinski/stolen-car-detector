@@ -1,5 +1,8 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { unstable_noStore as noStore } from 'next/cache'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
@@ -25,6 +28,7 @@ import {
 } from '@/components/ui/popover'
 import { useToast } from '@/components/ui/use-toast'
 import { Input } from './ui/input'
+import { uploadAndProcessFile } from '@/app/api/upload/actions'
 
 const MAX_FILE_SIZE = 10000000
 const ACCEPTED_IMAGE_TYPES = [
@@ -36,7 +40,7 @@ const ACCEPTED_IMAGE_TYPES = [
 const ACCEPT_IMAGE_TYPES_STRING = ACCEPTED_IMAGE_TYPES.join(',')
 
 const FormSchema = z.object({
-  picture: z // courtesy of https://medium.com/@damien_16960/input-file-x-shadcn-x-zod-88f0472c2b81
+  file: z // courtesy of https://medium.com/@damien_16960/input-file-x-shadcn-x-zod-88f0472c2b81
     .custom<FileList>((value) => value instanceof FileList)
     .refine((fileList) => fileList[0], { message: 'A file is required.' })
     .refine((fileList) => fileList[0]?.size <= MAX_FILE_SIZE, {
@@ -51,15 +55,36 @@ const FormSchema = z.object({
 })
 
 export function UploadForm() {
+  /*
+    set less aggressive caching, since we will want to refresh the page after
+    uploading to see the new image in the table
+  */
+  noStore()
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   })
 
-  const fileRef = form.register('picture')
+  const fileRef = form.register('file')
 
   const { toast } = useToast()
+  const router = useRouter()
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const formData = new FormData()
+    formData.append('file', data.file[0])
+
+    // formData.append(
+    //   'file',
+    //   new Blob([data.file[0]], { type: data.file[0].type })
+    // )
+    formData.append('lastSeenDate', data.lastSeenDate?.toISOString() || '')
+    formData.append('latitude', data.latitude || '')
+    formData.append('longitude', data.longitude || '')
+    // for (const value of formData.values()) {
+    //   console.log(value)
+    // }
+
     toast({
       title: 'Image is uploading',
       description: (
@@ -70,6 +95,11 @@ export function UploadForm() {
         </pre>
       ),
     })
+
+    await uploadAndProcessFile(formData)
+    console.log('done uploading, lets refresh the page')
+    // router.replace('/upload')
+    // router.refresh()
   }
 
   return (
@@ -77,15 +107,19 @@ export function UploadForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="picture"
+          name="file"
           render={({ field }) => (
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <FormLabel htmlFor="picture">Picture</FormLabel>
+              <FormLabel htmlFor="file">File</FormLabel>
               <Input
-                id="picture"
+                id="file"
                 type="file"
                 accept={ACCEPT_IMAGE_TYPES_STRING}
                 {...fileRef}
+                // onChange={(event) => {
+                //   console.log('change is a happenin: ', event.target.files[0])
+                //   field.onChange(event.target?.files?.[0] ?? undefined)
+                // }}
               />
               <FormMessage />
             </div>

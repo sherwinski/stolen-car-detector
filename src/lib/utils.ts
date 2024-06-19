@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import getOcrData from './roboflow'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -34,4 +35,15 @@ export function generateRandomDatatime(): string {
 
   // Format the date to ISO 8601 string, which is compatible with PostgreSQL TIMESTAMPZ
   return randomTimestamp.toISOString()
+}
+
+// extract text from the image using Roboflow Inference
+export async function getTextFromImage({ fileData }: { fileData: Buffer }) {
+  const OcrData = await getOcrData({ fileData })
+
+  console.log('got some data: ', OcrData)
+  // To help with fuzzy searching, we remove all white space from the text.
+  // Note: There is a chance that text cannot be extracted so we will add a fallback.
+  const textWithoutWhiteSpace = OcrData.result?.replace(/\s/g, '') || ''
+  return textWithoutWhiteSpace
 }
