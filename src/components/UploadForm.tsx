@@ -26,37 +26,36 @@ import {
 import { useToast } from '@/components/ui/use-toast'
 import { Input } from './ui/input'
 
-const MAX_FILE_SIZE = 1000000
+const MAX_FILE_SIZE = 10000000
 const ACCEPTED_IMAGE_TYPES = [
   'image/jpeg',
   'image/jpg',
   'image/png',
   'image/webp',
 ]
+const ACCEPT_IMAGE_TYPES_STRING = ACCEPTED_IMAGE_TYPES.join(',')
 
 const FormSchema = z.object({
-  picture: z //courtesy of: https://github.com/colinhacks/zod/issues/387#issuecomment-1191390673
-    .any()
-    .refine((files) => files?.length == 1, 'Image is required.')
-    .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      `Max file size is 10MB.`
-    )
-    .refine(
-      (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      '.jpg, .jpeg, .png and .webp files are accepted.'
-    ),
-  lastSeenDate: z.date({
-    required_error: 'A date of birth is required.',
-  }),
-  latitude: z.string({}).optional(),
-  longitude: z.string({}).optional(),
+  picture: z // courtesy of https://medium.com/@damien_16960/input-file-x-shadcn-x-zod-88f0472c2b81
+    .custom<FileList>((value) => value instanceof FileList)
+    .refine((fileList) => fileList[0], { message: 'A file is required.' })
+    .refine((fileList) => fileList[0]?.size <= MAX_FILE_SIZE, {
+      message: `Max file size is 10MB.`,
+    })
+    .refine((fileList) => ACCEPTED_IMAGE_TYPES.includes(fileList[0]?.type), {
+      message: '.jpg, .jpeg, .png and .webp files are accepted.',
+    }),
+  lastSeenDate: z.date().optional(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
 })
 
 export function UploadForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   })
+
+  const fileRef = form.register('picture')
 
   const { toast } = useToast()
 
@@ -82,7 +81,13 @@ export function UploadForm() {
           render={({ field }) => (
             <div className="grid w-full max-w-sm items-center gap-1.5">
               <FormLabel htmlFor="picture">Picture</FormLabel>
-              <Input id="picture" type="file" />
+              <Input
+                id="picture"
+                type="file"
+                accept={ACCEPT_IMAGE_TYPES_STRING}
+                {...fileRef}
+              />
+              <FormMessage />
             </div>
           )}
         />
@@ -127,7 +132,6 @@ export function UploadForm() {
               <FormDescription>
                 When was the photo of this vehicle taken?
               </FormDescription>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -139,7 +143,12 @@ export function UploadForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel htmlFor="latitude">Latitude</FormLabel>
-                  <Input type="text" id="latitude" placeholder="-123.244" />
+                  <Input
+                    type="text"
+                    id="latitude"
+                    placeholder="-123.244"
+                    {...field}
+                  />
                 </FormItem>
               )}
             />
@@ -149,7 +158,12 @@ export function UploadForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel htmlFor="longitude">Longitude</FormLabel>
-                  <Input type="text" id="longitude" placeholder="40.4" />
+                  <Input
+                    type="text"
+                    id="longitude"
+                    placeholder="40.4"
+                    {...field}
+                  />
                 </FormItem>
               )}
             />
