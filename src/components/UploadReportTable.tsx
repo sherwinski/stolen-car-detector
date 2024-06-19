@@ -55,17 +55,17 @@ export function UploadReportTable() {
           <TableBody>
             {recentVehicles.map((vehicle) => (
               <TableRow key={vehicle.id}>
-                <a
-                  onClick={() => {
-                    setLightboxVehicle(vehicle)
-                    setLightboxOpen(true)
-                  }}
-                  className="hover:text-orange-500"
-                >
-                  <TableCell>
+                <TableCell>
+                  <a
+                    onClick={() => {
+                      setLightboxVehicle(vehicle)
+                      setLightboxOpen(true)
+                    }}
+                    className="hover:text-orange-500"
+                  >
                     {vehicle.image_url.split('/').slice(-1).join('/')}
-                  </TableCell>
-                </a>
+                  </a>
+                </TableCell>
                 <TableCell>{vehicle.last_seen.toLocaleString()}</TableCell>
                 <TableCell>
                   <MapLink
